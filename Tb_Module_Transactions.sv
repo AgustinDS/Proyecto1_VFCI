@@ -1,22 +1,45 @@
-// module bs_gnrtr_n_rbtr #(parameter bits = 1,parameter drvrs = 4, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}}) (
-//   input clk,
-//   input reset,
-//   input  pndng[bits-1:0][drvrs-1:0],
-//   output push[bits-1:0][drvrs-1:0],
-//   output pop[bits-1:0][drvrs-1:0],
-//   input  [pckg_sz-1:0] D_pop[bits-1:0][drvrs-1:0],
-//   output [pckg_sz-1:0] D_push[bits-1:0][drvrs-1:0]
+// Curso: EL-5811 Taller de Comunicaciones Electricas
+// Tecnologico de Costa Rica (www.tec.ac.cr)
+// Desarrolladores:
+// José Agustín Delgado-Sancho (ahusjads@gmail.com)
+// Alonso Vega-Badilla (alonso9v9@gmail.com)
+// Este script esta estructurado en System Verilog
+// Proposito General:
+// Transacciones del testbench de un bus serial
+// 
+// 
+// Transacciones:
+// 
+// [Test:Generator]
+// Contenido aleatorio/específico Origen aleatorio/específico Destino aleatorio/específico Secuencias de transacciones aleatorias
+//
+// [Driver/Monitor:Bus]
+// Retardo/Dato/Tiempo/Tipo/Origen/Destino
+//
+// [Checker:Scoreboard]
+// Tiempo_envío/Tiempo_recibido/Latencia/Origen/Destino/Dato/Resultado
+//
+// [Test:Scoreboard]
+// Retardo_promedio/Reporte_Completo/Porcentaje_fallos/Porcentaje_éxitos
+//
+// [Test:Generator]
+// Push/Pop/Reset
 
 
 
-// Tipo
-// Contenido
-// Origen
-// Destino
-// Retardo
-// Tiempo de ejecución
+///////////////////////////////////////////////////////////////////////////////////////////////
+//Definición de enumeraciones [Tipo_de_accion--Solicitud_scoreboard--Instrucciones_Generador]//
+///////////////////////////////////////////////////////////////////////////////////////////////
 typedef enum {Push, Pop, reset} tipo_acc; 
 
+typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
+
+typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_al,or_esp,dest_al,dest_esp} instrucciones_gen;
+
+
+//////////////////////////////////
+//Transacción Driver/Monitor:Bus//
+//////////////////////////////////
 class trans_bus #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
@@ -45,30 +68,9 @@ class trans_bus #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 
 endclass
 
 
-interface bus_if #(parameter pckg_sz =16) (
-  input clk
-);
-	logic reset;
-	logic pndng;
-	logic push;
-	logic pop;
-	logic [pckg_sz-1:0] D_pop; 
-	logic [pckg_sz-1:0] D_push;
-
-endinterface
-
-
-// T_ envio
-// T_ recibido
-// Latencia
-// Origen
-// Dato
-// Destino
-// Resultado
-
-
-
-
+//////////////////////////////////
+//Transacción Monitor:Scoreboard//
+//////////////////////////////////
 class trans_scoreboard #(parameter pckg_sz=16,parameter drvr_bit=2);
 	bit [pckg_sz-1:0] dato_transmitido;
 	bit [drvr_bit-1:0] Origen;
@@ -117,44 +119,33 @@ class trans_scoreboard #(parameter pckg_sz=16,parameter drvr_bit=2);
 endclass
 
 
-// Completo
-// Retardo promedio
-// Porcentaje de operaciones fallidas
-// Cantidad de operaciones realizadas
-// Cantidad de pops
-// Cantidad de pushes
 
 
-
-typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ,cant_pop,cant_push} solicitud_sb;
-
-/////////////////////////////////////////////////////////////////////////
-// Definición de estructura para generar comandos hacia el agente      //
-/////////////////////////////////////////////////////////////////////////
-
-
-// Contenido aleatorio/específico
-// Origen aleatorio/específico
-// Destino aleatorio/específico
-
-typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_esp_dst_esp,or_esp_dst_al,or_al_dst_esp,or_al_dst_al} instrucciones_agente;
-
-///////////////////////////////////////////////////////////////////////////////////////
-// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
-///////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////
+//Definicion de mailboxes de tipo definido//
+////////////////////////////////////////////
 typedef mailbox #(trans_bus) trans_bus_mbx;
 
-///////////////////////////////////////////////////////////////////////////////////////
-// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
-///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_scoreboard) trans_sb_mbx;
 
-///////////////////////////////////////////////////////////////////////////////////////
-// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
-///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(solicitud_sb) comando_test_sb_mbx;
 
-///////////////////////////////////////////////////////////////////////////////////////
-// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
-///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
+
+
+
+////////////////////////////////////////////////////////////////////////
+//Definicion de interface entre driver/monitor al bus de tipo definido//
+////////////////////////////////////////////////////////////////////////
+interface bus_if #(parameter pckg_sz =16) (
+  input clk
+);
+	logic reset;
+	logic pndng;
+	logic push;
+	logic pop;
+	logic [pckg_sz-1:0] D_pop; 
+	logic [pckg_sz-1:0] D_push;
+
+endinterface
+

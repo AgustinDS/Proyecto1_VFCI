@@ -14,7 +14,7 @@
 // [Test:Generator]
 // Contenido aleatorio/específico Origen aleatorio/específico Destino aleatorio/específico Secuencias de transacciones aleatorias
 //
-// [Driver/Monitor:Bus]
+// [Driver/Monitor:Agente/Checker]
 // Retardo/Dato/Tiempo/Tipo/Origen/Destino
 //
 // [Checker:Scoreboard]
@@ -38,9 +38,9 @@ typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solici
 typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_al,or_esp,dest_al,dest_esp} instrucciones_gen;
 
 
-//////////////////////////////////
-//Transacción Driver/Monitor:Bus//
-//////////////////////////////////
+/////////////////////////////////
+//Driver/Monitor:Agente/Checker//
+/////////////////////////////////
 class trans_bus #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;

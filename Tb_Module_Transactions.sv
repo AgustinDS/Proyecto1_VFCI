@@ -45,7 +45,7 @@ class trans_bus #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
 	int tiempo;
-	rand tipo_oper tipo;
+	rand tipo_acc tipo;
 	int max_retardo;
 	rand bit [drvr_bit-1:0] Origen;
 	rand bit [drvr_bit-1:0] Destino;
@@ -98,14 +98,14 @@ class trans_scoreboard #(parameter pckg_sz=16,parameter drvr_bit=2);
 	endfunction
 
 	task latencia_calc;
-		this latencia=this.tiempo_recibido-this.tiempo_envio;
+		this.latencia=this.tiempo_recibido-this.tiempo_envio;
 	endtask
 
 	function print (string tag);
     $display("[%g] %s dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g", 
              $time,
              tag, 
-             this.dato_trasnmitido,
+             this.dato_transmitido,
              this.Origen,
              this.Destino, 
              this.tiempo_envio,
@@ -131,7 +131,7 @@ typedef mailbox #(trans_scoreboard) trans_sb_mbx;
 
 typedef mailbox #(solicitud_sb) comando_test_sb_mbx;
 
-typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
+typedef mailbox #(instrucciones_gen) comando_test_agent_mbx;
 
 
 
@@ -149,4 +149,3 @@ interface bus_if #(parameter pckg_sz =16) (
 	logic [pckg_sz-1:0] D_push;
 
 endinterface
-

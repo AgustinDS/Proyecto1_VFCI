@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //Definición de enumeraciones [Tipo_de_accion--Solicitud_scoreboard--Instrucciones_Generador]//
 ///////////////////////////////////////////////////////////////////////////////////////////////
-typedef enum {trans, reset} tipo_acc; 
+typedef enum {trans,broadcast,reset} tipo_acc; 
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
@@ -41,7 +41,7 @@ typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleat
 /////////////////////////////////
 //Driver/Monitor:Agente/Checker//
 /////////////////////////////////
-class trans_bus #(parameter pckg_sz = 16,parameter drvrs=4;
+class trans_bus #(parameter pckg_sz = 16,parameter drvrs=4);
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
 	int tiempo;
@@ -50,11 +50,10 @@ class trans_bus #(parameter pckg_sz = 16,parameter drvrs=4;
 	rand bit [pckg_sz-1:pckg_sz-8] Origen;
 	rand bit [pckg_sz-1:pckg_sz-8] Destino;
 
-	constraint const_retardo{retardo<max_retardo; retardo>0;}
-	constraint dest{dato[pckg_sz-1:pckg_sz-8]=Destino ; Destino<=drvrs}
+  	constraint const_retardo{retardo<max_retardo; retardo>0;}
+  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino<=drvrs;}
 
-
-	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=Push, int retrdo_mx=10,bit [drvr_bit-1:0] org=0);
+  function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] org=0);
 		this.retardo=ret;
 		this.dato=dt;
 		this.tiempo=tmp;
@@ -151,3 +150,4 @@ interface bus_if #(parameter pckg_sz = 16, parameter drvrs = 4,parameter bits = 
   logic [pckg_sz-1:0] D_push[bits-1:0][drvrs-1:0];
 
 endinterface
+ 

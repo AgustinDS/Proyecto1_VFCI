@@ -11,23 +11,23 @@
 //
 
 class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1}});
-	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
-	trans_bus_mbx mntor_chkr_mbx;
-	int espera;
+  virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
+  trans_bus_mbx mntor_chkr_mbx;
+  int espera;
 
-  	bit [pckg_sz-1:0] D_in [drvrs][$]; //FIFOS emuladas 
-	
+    bit [pckg_sz-1:0] D_in [drvrs][$]; //FIFOS emuladas 
+  
 
-	task run();
-	 $display("[%g] El monitor fue inicializado",$time);
-		
+  task run();
+   $display("[%g] El monitor fue inicializado",$time);
+    
 
     @(posedge vif.clk);
-		  forever begin
-			trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction;
-          	
+      forever begin
+      trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction;
+            
 
-      $display("[%g] el monitor esta enviado el dato al checker",$time);				
+      $display("[%g] el monitor esta enviado el dato al checker",$time);        
       espera = 0;
       @(posedge vif.clk);
       $display("Transacciones pendientes en el mbx mntor_chkr = %g",mntor_chkr_mbx.num());
@@ -35,7 +35,7 @@ class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1
       while(espera < transaction.retardo)begin
         @(posedge vif.clk);
             espera = espera+1;
-			end
+      end
 
       if (vif.D_push[0][0][pckg_sz-1:pckg_sz-8]==brodcst) begin
         transaction.tipo=broadcast;
@@ -43,6 +43,7 @@ class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1
           if (vif.push[0][i]) begin
               D_in[i].push_back(vif.D_push[0][i]);
               transaction.dato=D_in[i].pop_front;
+          end
         end
         mntor_chkr_mbx.put(transaction);
         $display("[%g] Operación completada",$time);
@@ -78,7 +79,7 @@ class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1
         end
       end
 
-			@(posedge vif.clk);
-		end
-	endtask
+      @(posedge vif.clk);
+    end
+  endtask
 endclass

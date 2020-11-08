@@ -58,11 +58,11 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
 	rand bit [7:0] Origen;
 	rand bit [7:0] Destino;
 
-  	constraint const_retardo{retardo=<max_retardo; retardo>=0;}
+  constraint const_retardo{retardo<=max_retardo; retardo>=0;}
   	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0;Destino==broadcast||Destino<drvrs;}
   	constraint org{Origen<drvrs;Origen>=0;}
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
-  	constraint brds{tipo==broadcast->Destino==broadcast);}
+  	constraint brds{tipo==broadcast->Destino==broadcast;}
 
   function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org);
 		this.retardo=ret;
@@ -112,7 +112,7 @@ class trans_scoreboard #(parameter pckg_sz=16);
 	endtask
 
 	function print (string tag);
-    $display("[%g] %s ,Tipo=%s ,dato_enviado=0x%h,dato_recibido=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
+      $display("[%g] %s ,Tipo=%s ,dato_enviado=0x%h,dato_recibido=0x%h,origen=0x%h,destino=0x%h,t_enviado=%g,t_recibido=%g,cmplt=%g,ltncy=%g", 
              $time,
              tag,
              this.tipo, 

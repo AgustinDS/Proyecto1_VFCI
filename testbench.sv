@@ -1,12 +1,12 @@
 `timescale 1ns/1ps
-`include "fifo.sv"
-`include "interface_transactions.sv"
-`include "driver.sv"
+`include "Library.sv"
+`include "Transactions.sv"
+`include "Driver.sv"
+`include "Monitor.sv"
 `include "checker.sv"
-`include "score_board.sv"
+`include "scoreboard.sv"
 `include "agent.sv"
 `include "ambiente.sv"
-`include "test.sv"
 
 ///////////////////////////////////
 // Módulo para correr la prueba  //

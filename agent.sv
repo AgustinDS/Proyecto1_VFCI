@@ -12,6 +12,7 @@
 
 class agent #(parameter pckg_sz=32,parameter drvrs=4);
   trans_bus_mbx agnt_drv_mbx;           // Mailbox del agente al driver
+  trans_bus_mbx agnt_chkr_mbx;
   comando_test_agent_mbx test_agent_mbx; // Mailbox del test al agente
   int num_transacciones;                 // Número de transacciones para las funciones del agente
   int max_retardo; 
@@ -47,6 +48,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
               transaccion.tipo = tpo_spec;
               transaccion.print("Agente: transacción creada");
               agnt_drv_mbx.put(transaccion);
+              agnt_chkr_mbx.put(transaccion);
             end
             for(int i=0; i<num_transacciones;i++) begin
               transaccion =new;
@@ -55,6 +57,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
               transaccion.tipo = tpo_spec;
               transaccion.print("Agente: transacción creada");
               agnt_drv_mbx.put(transaccion);
+              agnt_chkr_mbx.put(transaccion);
             end
           end
           trans_aleatoria: begin  // Esta instrucción genera una transaccion aleatoria
@@ -63,6 +66,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.randomize();
             transaccion.print("Agente: transacción creada");
             agnt_drv_mbx.put(transaccion);
+            agnt_chkr_mbx.put(transaccion);
           end
           trans_especifica: begin  // Esta instrucción genera una transacción específica
             transaccion =new;
@@ -73,6 +77,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.Destino= dst_spec;
             transaccion.print("Agente: transacción creada");
             agnt_drv_mbx.put(transaccion);
+            agnt_chkr_mbx.put(transaccion);
           end
           sec_trans_aleatorias: begin // Esta instrucción genera una secuencia de instrucciones aleatorias
             for(int i=0; i<num_transacciones;i++) begin
@@ -81,6 +86,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.randomize();
             transaccion.print("Agente: transacción creada");
             agnt_drv_mbx.put(transaccion);
+            agnt_chkr_mbx.put(transaccion);
             end
           end
         endcase

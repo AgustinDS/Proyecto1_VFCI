@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //Definición de enumeraciones [Tipo_de_accion--Solicitud_scoreboard--Instrucciones_Generador]//
 ///////////////////////////////////////////////////////////////////////////////////////////////
-typedef enum {Push, Pop, reset} tipo_acc; 
+typedef enum {trans, reset} tipo_acc; 
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
@@ -41,25 +41,27 @@ typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleat
 /////////////////////////////////
 //Driver/Monitor:Agente/Checker//
 /////////////////////////////////
-class trans_bus #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
+class trans_bus #(parameter pckg_sz = 16,parameter drvrs=4;
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
 	int tiempo;
 	rand tipo_acc tipo;
 	int max_retardo;
-	rand bit [drvr_bit-1:0] Origen;
-	rand bit [drvr_bit-1:0] Destino;
+	rand bit [pckg_sz-1:pckg_sz-8] Origen;
+	rand bit [pckg_sz-1:pckg_sz-8] Destino;
 
 	constraint const_retardo{retardo<max_retardo; retardo>0;}
+	constraint dest{dato[pckg_sz-1:pckg_sz-8]=Destino ; Destino<=drvrs}
 
-	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=Push, int retrdo_mx=10,bit [drvr_bit-1:0] org=0,bit [drvr_bit-1:0] dst=1);
+
+	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=Push, int retrdo_mx=10,bit [drvr_bit-1:0] org=0);
 		this.retardo=ret;
 		this.dato=dt;
 		this.tiempo=tmp;
 		this.tipo=tpo;
 		this.max_retardo=retrdo_mx;
 		this.Origen=org;
-		this.Destino=dst;
+		this.Destino=dt[pckg_sz-1:pckg_sz-8];
 	endfunction
 
 	function void print (string tag = "");
@@ -138,14 +140,14 @@ typedef mailbox #(instrucciones_gen) comando_test_agent_mbx;
 ////////////////////////////////////////////////////////////////////////
 //Definicion de interface entre driver/monitor al bus de tipo definido//
 ////////////////////////////////////////////////////////////////////////
-interface bus_if #(parameter pckg_sz =16) (
+interface bus_if #(parameter pckg_sz = 16, parameter drvrs = 4,parameter bits = 1) (
   input clk
 );
-	logic reset;
-	logic pndng;
-	logic push;
-	logic pop;
-	logic [pckg_sz-1:0] D_pop; 
-	logic [pckg_sz-1:0] D_push;
+  logic reset;
+  logic pndng[bits-1:0][drvrs-1:0];
+  logic push[bits-1:0][drvrs-1:0];
+  logic pop[bits-1:0][drvrs-1:0];
+  logic [pckg_sz-1:0] D_pop[bits-1:0][drvrs-1:0];
+  logic [pckg_sz-1:0] D_push[bits-1:0][drvrs-1:0];
 
 endinterface

@@ -66,7 +66,6 @@ class driver #(parameter pckg_sz=32,parameter drvrs=4);
 							vif.pndng[0][i]=1;
 						end 
 					end
-					transaction.tiempo = $time;
 	     			transaction.print("Driver: Transaccion ejecutada");
 				end
 

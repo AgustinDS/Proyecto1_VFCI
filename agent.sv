@@ -47,6 +47,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
               tpo_spec = trans;
               transaccion.tipo = tpo_spec;
               transaccion.print("Agente: transacción creada");
+              transaction.tiempo = $time;
               agnt_drv_mbx.put(transaccion);
               agnt_chkr_mbx.put(transaccion);
             end
@@ -56,6 +57,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
               tpo_spec = trans;
               transaccion.tipo = tpo_spec;
               transaccion.print("Agente: transacción creada");
+              transaction.tiempo = $time;
               agnt_drv_mbx.put(transaccion);
               agnt_chkr_mbx.put(transaccion);
             end
@@ -65,6 +67,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.max_retardo = max_retardo;
             transaccion.randomize();
             transaccion.print("Agente: transacción creada");
+            transaction.tiempo = $time;
             agnt_drv_mbx.put(transaccion);
             agnt_chkr_mbx.put(transaccion);
           end
@@ -76,6 +79,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.Origen= or_spec;
             transaccion.Destino= dst_spec;
             transaccion.print("Agente: transacción creada");
+            transaction.tiempo = $time;
             agnt_drv_mbx.put(transaccion);
             agnt_chkr_mbx.put(transaccion);
           end
@@ -85,6 +89,7 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             transaccion.max_retardo = max_retardo;
             transaccion.randomize();
             transaccion.print("Agente: transacción creada");
+            transaction.tiempo = $time;
             agnt_drv_mbx.put(transaccion);
             agnt_chkr_mbx.put(transaccion);
             end

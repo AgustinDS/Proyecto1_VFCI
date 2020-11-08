@@ -96,11 +96,9 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
           end
           dst_broadcast: begin
             transaccion =new;
+            transaccion.max_retardo = max_retardo;
             transaccion.tipo = broadcast;
-            transaccion.dato = dto_spec;
-            transaccion.retardo = ret_spec;
-            transaccion.Origen= or_spec;
-            transaccion.Destino= dst_spec;
+            transaccion.randomize();
             transaccion.print("Agente: transacción creada");
             transaction.tiempo = $time;
             agnt_drv_mbx.put(transaccion);

@@ -38,13 +38,13 @@ typedef enum {trans,broadcast,reset} tipo_acc;
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
-typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_al,or_esp,dest_al,dest_esp} instrucciones_gen;
+typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_al,or_esp,dest_al,dest_esp} instrucciones_agente;
 
 
 /////////////////////////////////
 //Driver/Monitor:Agente/Checker//
 /////////////////////////////////
-class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4);
+class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={8{1'b1}});
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
 	int tiempo;
@@ -54,9 +54,9 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4);
 	rand bit [pckg_sz-1:pckg_sz-8] Destino;
 
   	constraint const_retardo{retardo<max_retardo; retardo>0;}
-  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino<=drvrs;}
+  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0||Destino==broadcast;}
   	constraint org{dato[pckg_sz-9:pckg_sz-16]==Origen; Origen<=drvrs;}
-  	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0}
+  	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
 
   function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10);
 		this.retardo=ret;
@@ -137,7 +137,7 @@ typedef mailbox #(trans_scoreboard) trans_sb_mbx;
 
 typedef mailbox #(solicitud_sb) comando_test_sb_mbx;
 
-typedef mailbox #(instrucciones_gen) comando_test_agent_mbx;
+typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
 
 
 

@@ -55,19 +55,25 @@ class monitor #(parameter pckg_sz=32,parameter drvrs=4,parameter brodcst={8{1'b1
           fork
             forever @(posedge vif.clk) begin              
               if (vif.reset) begin
-                transaction.tipo=reset; 
+                transaction.tipo=reset;
+                D_in[i].push_back(vif.D_push[0][i]);
+                $display("[%g] Operación completada",$time);
+                transaction.tiempo=$time;
+                transaction.dato=D_in[i].pop_front;
+                mntor_chkr_mbx.put(transaction);
+                transaction.print("Monitor: Transaccion enviada al checker"); 
               end else 
               begin
                 if (vif.push[0][i]) begin
-                  transaction.tipo=trans; 
+                  transaction.tipo=trans;
+                  D_in[i].push_back(vif.D_push[0][i]);
+                  $display("[%g] Operación completada",$time);
+                  transaction.tiempo=$time;
+                  transaction.dato=D_in[i].pop_front;
+                  mntor_chkr_mbx.put(transaction);
+                  transaction.print("Monitor: Transaccion enviada al checker"); 
                 end
               end 
-              D_in[i].push_back(vif.D_push[0][i]);
-              $display("[%g] Operación completada",$time);
-              transaction.tiempo=$time;
-              transaction.dato=D_in[i].pop_front;
-              mntor_chkr_mbx.put(transaction);
-              transaction.print("Monitor: Transaccion enviada al checker");
             end
           join_none
         end

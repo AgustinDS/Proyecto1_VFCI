@@ -13,7 +13,6 @@
 class driver #(parameter pckg_sz=32,parameter drvrs=4);
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx agnt_drv_mbx;
-	trans_bus_mbx drvr_chkr_mbx;
 	int espera;
 
   	bit [pckg_sz-1:0] D_out[drvrs][$]; //FIFOS emuladas 
@@ -68,7 +67,6 @@ class driver #(parameter pckg_sz=32,parameter drvrs=4);
 						end 
 					end
 					transaction.tiempo = $time;
-					drv_chkr_mbx.put(transaction); 
 	     			transaction.print("Driver: Transaccion ejecutada");
 				end
 
@@ -77,14 +75,12 @@ class driver #(parameter pckg_sz=32,parameter drvrs=4);
 					vif.D_pop=D_out[transaction.Origen][0];
 					vif.pndng[0][transaction.Origen]=1;
 					transaction.tiempo = $time;
-					drv_chkr_mbx.put(transaction); 
 	     			transaction.print("Driver: Transaccion ejecutada");
 				end
 
 				reset:begin
 					vif.reset=1;
 					transaction.tiempo = $time;
-					drv_chkr_mbx.put(transaction);
 					transaction.print("Driver: Transaccion ejecutada");
 				end
 

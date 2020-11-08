@@ -46,43 +46,37 @@ class driver #(parameter pckg_sz=32,parameter drvrs=4);
 				end 
 			end
 
-      		$display("[%g] el Driver espera por una transacción",$time);				
-      		espera = 0;
-      		@(posedge vif.clk);
-      		agnt_drv_mbx.get(transaction);
-      		transaction.print("Driver: Transaccion recibida");
-      		$display("Transacciones pendientes en el mbx agnt_drv = %g",agnt_drv_mbx.num());
+      			$display("[%g] el Driver espera por una transacción",$time);				
+      			espera = 0;
+      			@(posedge vif.clk);
+      			agnt_drv_mbx.get(transaction);
+      			transaction.print("Driver: Transaccion recibida");
+      			$display("Transacciones pendientes en el mbx agnt_drv = %g",agnt_drv_mbx.num());
 
-      		while(espera < transaction.retardo)begin
-        		@(posedge vif.clk);
-          		espera = espera+1;
+      			while(espera < transaction.retardo)begin
+        			@(posedge vif.clk);
+          			espera = espera+1;
 			end
 
 			case(transaction.tipo)
 				broadcast:begin
-					
 					foreach (D_out[i]) begin	
-                      	if (i!=transaction.Origen) begin
+                      				if (i!=transaction.Origen) begin
 							D_out[i].push_back(transaction.dato);
 							vif.pndng[0][i]=1;
 						end 
 					end
-					
 					transaction.tiempo = $time;
 					drv_chkr_mbx.put(transaction); 
-	     			transaction.print("Driver: Transaccion ejecutada");
-					
-
+	     				transaction.print("Driver: Transaccion ejecutada");
 				end
 
 				trans:begin
-                  	D_out[transaction.Origen].push_back(transaction.dato); //Agregamos el dato enviado en la fifo out del origen
+                  			D_out[transaction.Origen].push_back(transaction.dato); //Agregamos el dato enviado en la fifo out del origen
 					vif.pndng[0][transaction.Origen]=1;
-
 					transaction.tiempo = $time;
 					drv_chkr_mbx.put(transaction); 
-	     			transaction.print("Driver: Transaccion ejecutada");
-
+	     				transaction.print("Driver: Transaccion ejecutada");
 				end
 
 				reset:begin

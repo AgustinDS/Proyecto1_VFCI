@@ -1,15 +1,24 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Ambiente: este módulo es el encargado de conectar todos los elementos del ambiente para que puedan ser usados por el test //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class ambiente #(parameter width =16, parameter depth = 8);
+// Curso: EL-5811 Taller de Comunicaciones Electricas
+// Tecnologico de Costa Rica (www.tec.ac.cr)
+// Código consultado y adaptado: https://estudianteccr.sharepoint.com/sites/VerificacinFuncional/Documentos%20compartidos/General/Test_CR_fifo.zip -Realizado por: RONNY GARCIA RAMIREZ 
+// Desarrolladores:
+// José Agustín Delgado-Sancho (ahusjads@gmail.com)
+// Alonso Vega-Badilla (alonso9v9@gmail.com)
+// Este script esta estructurado en System Verilog
+// Proposito General:
+// Modulo ambiente del testbench de un bus serial
+//
+//
+
+class ambiente #(parameter pckg_sz=32,parameter drvrs=4);
   // Declaración de los componentes del ambiente
-  driver #(.width(width)) driver_inst;
-  checker #(.width(width),.depth(depth)) checker_inst;
-  score_board #(.width(width)) scoreboard_inst;
-  agent #(.width(width),.depth(depth)) agent_inst;
+  driver #(.pckg_sz(pckg_sz),.drvrs(drvrs)) driver_inst;
+  checker #(.pckg_sz(pckg_sz),.drvrs(drvrs)) checker_inst;
+  score_board #(.pckg_sz(pckg_sz),.drvrs(drvrs)) scoreboard_inst;
+  agent #(.pckg_sz(pckg_sz),.drvrs(drvrs)) agent_inst;
   
   // Declaración de la interface que conecta el DUT 
-  virtual fifo_if  #(.width(width)) _if;
+  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
 
   //declaración de los mailboxes
   trans_fifo_mbx agnt_drv_mbx;           //mailbox del agente al driver

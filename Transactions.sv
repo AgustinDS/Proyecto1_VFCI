@@ -38,7 +38,7 @@ typedef enum {trans,broadcast,reset} tipo_acc;
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
-typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,or_al,or_esp,dest_al,dest_esp} instrucciones_agente;
+typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias} instrucciones_agente;
 
 
 /////////////////////////////////

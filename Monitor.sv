@@ -10,7 +10,7 @@
 //
 //
 
-class monitor #(parameter pckg_sz=32,parameter drvrs=4,parameter brodcst={8{1'b1}});
+class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1}});
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx mntor_chkr_mbx;
 	int espera;
@@ -37,13 +37,12 @@ class monitor #(parameter pckg_sz=32,parameter drvrs=4,parameter brodcst={8{1'b1
             espera = espera+1;
 			end
 
-      if ([pckg_sz-1:pckg_sz-8]vif.D_push[0][0]==brodcst) begin
+      if (vif.D_push[0][0][pckg_sz-1:pckg_sz-8]==brodcst) begin
         transaction.tipo=broadcast;
         foreach(vif.push[0][i]) begin
           if (vif.push[0][i]) begin
               D_in[i].push_back(vif.D_push[0][i]);
               transaction.dato=D_in[i].pop_front;
-          end
         end
         mntor_chkr_mbx.put(transaction);
         $display("[%g] Operación completada",$time);

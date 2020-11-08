@@ -10,7 +10,7 @@
 //
 //llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias
 
-class agent #(parameter pckg_sz=32,parameter drvrs=4);
+class agent #(parameter pckg_sz=16,parameter drvrs=4);
   trans_bus_mbx agnt_drv_mbx;           // Mailbox del agente al driver
   trans_bus_mbx agnt_chkr_mbx;
   comando_test_agent_mbx test_agent_mbx; // Mailbox del test al agente

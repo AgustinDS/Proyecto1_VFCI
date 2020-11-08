@@ -59,18 +59,18 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
 	rand bit [7:0] Destino;
 
   	constraint const_retardo{retardo=<max_retardo; retardo>=0;}
-  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0||Destino==broadcast;Destino<=drvrs;}
-  	constraint org{dato[pckg_sz-9:pckg_sz-16]==Origen; Origen<=drvrs;Origen>=0;}
+  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0;Destino==broadcast||Destino<drvrs;}
+  	constraint org{Origen<drvrs;Origen>=0;}
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
-  	constraint brds{tipo==broadcast->dato[pckg_sz-1:pckg_sz-8]==broadcast);}
+  	constraint brds{tipo==broadcast->Destino==broadcast);}
 
-  function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10);
+  function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org);
 		this.retardo=ret;
 		this.dato=dt;
 		this.tiempo=tmp;
 		this.tipo=tpo;
 		this.max_retardo=retrdo_mx;
-		this.Origen= dt[pckg_sz-9:pckg_sz-16];
+		this.Origen=Org;
 		this.Destino=dt[pckg_sz-1:pckg_sz-8];
 	endfunction
 
@@ -84,7 +84,7 @@ endclass
 //////////////////////////////////
 //Transacción Checker:Scoreboard//
 //////////////////////////////////
-class trans_scoreboard #(parameter pckg_sz=32);
+class trans_scoreboard #(parameter pckg_sz=16);
 	bit [pckg_sz-1:0] dato_transmitido;
 	bit [pckg_sz-1:0] dato_recibido;
 	bit [7:0] Origen;
@@ -147,7 +147,7 @@ typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
 ////////////////////////////////////////////////////////////////////////
 //Definicion de interface entre driver/monitor al bus de tipo definido//
 ////////////////////////////////////////////////////////////////////////
-interface bus_if #(parameter pckg_sz = 32, parameter drvrs = 4,parameter bits = 1) (
+interface bus_if #(parameter pckg_sz = 16, parameter drvrs = 4,parameter bits = 1) (
   input clk
 );
   logic reset;

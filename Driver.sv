@@ -6,44 +6,39 @@
 // Alonso Vega-Badilla (alonso9v9@gmail.com)
 // Este script esta estructurado en System Verilog
 // Proposito General:
-// Modulo Driver/monitor del testbench de un bus serial
+// Modulo Driver del testbench de un bus serial
 //
 //
-`include "Transactions.sv"
 
-class driver #(parameter pckg_sz=16,parameter drvrs=4);
+class driver #(parameter pckg_sz=32,parameter drvrs=4);
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx agnt_drv_mbx;
 	trans_bus_mbx mntor_chkr_mbx;
 	int espera;
-	event Pop;
 
-	bit [pckg_sz-1:0] D_in [drvrs][$]; //FIFOS emuladas 
   	bit [pckg_sz-1:0] D_out[drvrs][$]; //FIFOS emuladas 
 	
 
 	task run();
 		$$display("[%g] El driver fue inicializado",$time);
+
+		foreach(vif.pop[0][i]) begin
+  			fork
+  				forever @(posedge vif.clk) begin
+  			 		if (vif.pop[0][i]) begin
+  			 			vif.D_pop[0][i]=D_out[i].pop_front;
+  			 		end
+  			 	end
+  			 join_none
+  		end
+
 		@(posedge vif.clk);
 		vif.reset=1;
 		@(posedge vif.clk);
 		forever begin
 			trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction;
 			vif.reset=0;
-          	@(posedge vif.clk) begin
-  				foreach(vif.pop[i]) begin
-  					fork
-  						wait(Pop.triggered);
-  			 			if (vif.pop[i]) begin
-  			 				vif.D_pop[0][i]=D_out[i].pop_front;
-  			 			end
-  			 		join_none
-  				end
-  				->Pop; 
-			end
-			
-         
-          
+
 			foreach(vif.pndng[i]) begin
 				foreach(vif.pndng[i][j]) begin
 					vif.pndng[i][j]=0;
@@ -66,15 +61,12 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4);
 			case(transaction.tipo)
 				broadcast:begin
 					
-                  	transaction.dato=vif.D_pop[0][transaction.Origen];
-					foreach (vif.D_push[0][i]) begin	
+					foreach (D_out[i]) begin	
                       	if (i!=transaction.Origen) begin
-							vif.D_push[0][i]=transaction.dato;
-							vif.push[0][i]=1;
+							D_out[i].push_back(transaction.dato);
+							vif.pndng[0][i]=1;
 						end 
 					end
-
-                  	vif.pop[0][transaction.Origen]=1;
 					
 					transaction.tiempo = $time;
 					drv_chkr_mbx.put(transaction); 
@@ -85,7 +77,7 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4);
 
 				trans:begin
                   	D_out[transaction.Origen].push_back(transaction.dato); //Agregamos el dato enviado en la fifo out del origen
-					vif.pndng[transaction.Origen]=1;
+					vif.pndng[0][transaction.Origen]=1;
 
 					transaction.tiempo = $time;
 					drv_chkr_mbx.put(transaction); 
@@ -95,9 +87,9 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4);
 
 				reset:begin
 					vif.reset=1;
-
 					transaction.tiempo = $time;
 					mntor_chkr_mbx.put(transaction);
+  			 		transaction.print("Driver: Transaccion enviada al checker");
 					transaction.print("Driver: Transaccion ejecutada");
 				end
 

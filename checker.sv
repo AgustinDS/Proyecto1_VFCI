@@ -1,6 +1,6 @@
 // Módulo Checker
 
-class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
+class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32, parameter broadcast = {8{1'b1}});
 	trans_sb_mbx chckr_sb_mbx;	// Mailbox checker-scoreboard
   	trans_bus chckr_mntr_mbx;	// Mailbox checker-monitor
   	trans_bus auxiliar;		// Item auxiliar para emular el fifo de cada dispositivo

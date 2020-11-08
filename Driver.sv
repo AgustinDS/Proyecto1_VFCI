@@ -82,8 +82,7 @@ class driver #(parameter pckg_sz=32,parameter drvrs=4);
 				reset:begin
 					vif.reset=1;
 					transaction.tiempo = $time;
-					mntor_chkr_mbx.put(transaction);
-  			 		transaction.print("Driver: Transaccion enviada al checker");
+					drv_chkr_mbx.put(transaction);
 					transaction.print("Driver: Transaccion ejecutada");
 				end
 

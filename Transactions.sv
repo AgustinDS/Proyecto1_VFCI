@@ -14,10 +14,13 @@
 // [Test:Generator]
 // Contenido aleatorio/específico Origen aleatorio/específico Destino aleatorio/específico Secuencias de transacciones aleatorias
 //
-// [Driver:Agente]
+// [Agente:Driver]
 // Retardo/Dato/Tiempo/Tipo/Origen/Destino
 //
-// [Driver:Agente]
+// [Agente:Checker]
+// Retardo/Dato/Tiempo/Tipo/Origen/Destino
+//
+// [Monitor:Checker]
 // Retardo/Dato/Tiempo/Tipo/Origen/Destino
 //
 // [Checker:Scoreboard]
@@ -27,8 +30,10 @@
 // Retardo_promedio/Reporte_Completo/Porcentaje_fallos/Porcentaje_éxitos
 //
 // [Test:Generator]
-// Push/Pop/Reset
-
+// llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias
+//
+// [Monitor:Scoreboard]
+// Dato/Origen/Destino/Tenvio/Trecibido/Completado/Reset/Latencia
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,15 +83,13 @@ endclass
 //////////////////////////////////
 //Transacción Monitor:Scoreboard//
 //////////////////////////////////
-class trans_scoreboard #(parameter pckg_sz=32,parameter drvr_bit=2);
+class trans_scoreboard #(parameter pckg_sz=32);
 	bit [pckg_sz-1:0] dato_transmitido;
-	bit [drvr_bit-1:0] Origen;
-	bit [drvr_bit-1:0] Destino;
+	bit [7:0] Origen;
+	bit [7:0] Destino;
 	int tiempo_envio;
 	int tiempo_recibido;
 	bit completado;
-	bit overflow;
-	bit underflow;
 	bit reset;
 	int latencia;
 
@@ -97,8 +100,6 @@ class trans_scoreboard #(parameter pckg_sz=32,parameter drvr_bit=2);
 		this.tiempo_envio=0;
 		this.tiempo_recibido=0;
 		this.completado=0;
-		this.overflow=0;
-		this.underflow=0;
 		this.reset=0;
 		this.latencia=0;
 	endfunction
@@ -108,7 +109,7 @@ class trans_scoreboard #(parameter pckg_sz=32,parameter drvr_bit=2);
 	endtask
 
 	function print (string tag);
-    $display("[%g] %s dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g", 
+    $display("[%g] %s dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
              $time,
              tag, 
              this.dato_transmitido,
@@ -117,8 +118,6 @@ class trans_scoreboard #(parameter pckg_sz=32,parameter drvr_bit=2);
              this.tiempo_envio,
              this.tiempo_recibido,
              this.completado,
-             this.overflow,
-             this.underflow,
              this.reset,
              this.latencia);
   endfunction

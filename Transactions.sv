@@ -30,7 +30,7 @@
 // Retardo_promedio/Reporte_Completo/Porcentaje_fallos/Porcentaje_éxitos
 //
 // [Test:Generator]
-// llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias
+// sec_trans_aleatoria,trans_especifica,broadcast_esp,broadcast_al
 //
 // [Checker:Scoreboard]
 // Dato/Origen/Destino/Tenvio/Trecibido/Completado/Tipo/Latencia
@@ -43,7 +43,7 @@ typedef enum {trans,broadcast,reset} tipo_acc;
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
-typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,dst_broadcast} instrucciones_agente;
+typedef enum {sec_trans_aleatorias,trans_especifica,broadcast_esp,broadcast_al} instrucciones_agente;
 
 
 /////////////////////////////////
@@ -55,12 +55,12 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
 	int tiempo;
 	rand tipo_acc tipo;
 	int max_retardo;
-	rand bit [pckg_sz-1:pckg_sz-8] Origen;
-	rand bit [pckg_sz-1:pckg_sz-8] Destino;
+	rand bit [7:0] Origen;
+	rand bit [7:0] Destino;
 
-  	constraint const_retardo{retardo<max_retardo; retardo>0;}
-  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0||Destino==broadcast;}
-  	constraint org{dato[pckg_sz-9:pckg_sz-16]==Origen; Origen<=drvrs;}
+  	constraint const_retardo{retardo=<max_retardo; retardo>=0;}
+  	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0||Destino==broadcast;Destino<=drvrs;}
+  	constraint org{dato[pckg_sz-9:pckg_sz-16]==Origen; Origen<=drvrs;Origen>=0;}
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
   	constraint brds{tipo==broadcast->dato[pckg_sz-1:pckg_sz-8]==broadcast);}
 
@@ -86,6 +86,7 @@ endclass
 //////////////////////////////////
 class trans_scoreboard #(parameter pckg_sz=32);
 	bit [pckg_sz-1:0] dato_transmitido;
+	bit [pckg_sz-1:0] dato_recibido;
 	bit [7:0] Origen;
 	bit [7:0] Destino;
 	int tiempo_envio;
@@ -96,6 +97,7 @@ class trans_scoreboard #(parameter pckg_sz=32);
 
 	function clean ();
 		this.dato_transmitido=0;
+		this.dato_recibido=0;
 		this.Origen=0;
 		this.Destino=1;
 		this.tiempo_envio=0;
@@ -110,11 +112,12 @@ class trans_scoreboard #(parameter pckg_sz=32);
 	endtask
 
 	function print (string tag);
-    $display("[%g] %s ,Tipo=%s ,dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
+    $display("[%g] %s ,Tipo=%s ,dato_enviado=0x%h,dato_recibido=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
              $time,
              tag,
              this.tipo, 
              this.dato_transmitido,
+             this.dato_recibido,
              this.Origen,
              this.Destino, 
              this.tiempo_envio,

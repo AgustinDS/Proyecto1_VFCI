@@ -39,37 +39,16 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
         $display("[%g]  Agente: se recibe instruccion",$time);
         test_agent_mbx.get(instruccion);
         case(instruccion)
-          llenado_aleatorio: begin  // Esta instruccion genera num_tranacciones escrituras seguidas del mismo número de lecturas
+          sec_trans_aleatorias: begin  // Esta instruccion genera num_tranacciones escrituras seguidas del mismo número de lecturas
             for(int i = 0; i < num_transacciones;i++) begin
               transaccion =new;
               transaccion.max_retardo = max_retardo;
               transaccion.randomize();
-              tpo_spec = trans;
-              transaccion.tipo = tpo_spec;
               transaccion.print("Agente: transacción creada");
               transaction.tiempo = $time;
               agnt_drv_mbx.put(transaccion);
               agnt_chkr_mbx.put(transaccion);
             end
-            for(int i=0; i<num_transacciones;i++) begin
-              transaccion =new;
-              transaccion.randomize();
-              tpo_spec = trans;
-              transaccion.tipo = tpo_spec;
-              transaccion.print("Agente: transacción creada");
-              transaction.tiempo = $time;
-              agnt_drv_mbx.put(transaccion);
-              agnt_chkr_mbx.put(transaccion);
-            end
-          end
-          trans_aleatoria: begin  // Esta instrucción genera una transaccion aleatoria
-            transaccion =new;
-            transaccion.max_retardo = max_retardo;
-            transaccion.randomize();
-            transaccion.print("Agente: transacción creada");
-            transaction.tiempo = $time;
-            agnt_drv_mbx.put(transaccion);
-            agnt_chkr_mbx.put(transaccion);
           end
           trans_especifica: begin  // Esta instrucción genera una transacción específica
             transaccion =new;
@@ -83,27 +62,26 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             agnt_drv_mbx.put(transaccion);
             agnt_chkr_mbx.put(transaccion);
           end
-          sec_trans_aleatorias: begin // Esta instrucción genera una secuencia de instrucciones aleatorias
-            for(int i=0; i<num_transacciones;i++) begin
+          broadcast_esp: begin
             transaccion =new;
-            transaccion.max_retardo = max_retardo;
-            transaccion.randomize();
-            transaccion.print("Agente: transacción creada");
-            transaction.tiempo = $time;
-            agnt_drv_mbx.put(transaccion);
-            agnt_chkr_mbx.put(transaccion);
-            end
-          end
-          dst_broadcast: begin
-            transaccion =new;
-            transaccion.max_retardo = max_retardo;
             transaccion.tipo = broadcast;
-            transaccion.randomize();
+            transaccion.dato = dto_spec;
+            transaccion.retardo = ret_spec;
+            transaccion.Origen= or_spec;
+            transaccion.Destino= dst_spec;
             transaccion.print("Agente: transacción creada");
             transaction.tiempo = $time;
             agnt_drv_mbx.put(transaccion);
             agnt_chkr_mbx.put(transaccion);
-
+          end
+          broadcast_al: begin
+            transaccion =new;
+            transaccion.randomize();
+            transaccion.tipo = broadcast;
+            transaccion.print("Agente: transacción creada");
+            transaction.tiempo = $time;
+            agnt_drv_mbx.put(transaccion);
+            agnt_chkr_mbx.put(transaccion);
           end
         endcase
       end

@@ -10,7 +10,7 @@
 //
 //
 
-class monitor #(parameter pckg_sz=32,parameter drvrs=4);
+class monitor #(parameter pckg_sz=32,parameter drvrs=4,parameter brodcst={8{1'b1}});
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx mntor_chkr_mbx;
 	int espera;
@@ -19,49 +19,60 @@ class monitor #(parameter pckg_sz=32,parameter drvrs=4);
 	
 
 	task run();
-		$display("[%g] El monitor fue inicializado",$time);
+	 $display("[%g] El monitor fue inicializado",$time);
 		
 
-		@(posedge vif.clk);
-		forever begin
+    @(posedge vif.clk);
+		  forever begin
 			trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction;
           	
 
-      		$display("[%g] el monitor esta enviado el dato al checker",$time);				
-      		espera = 0;
-      		@(posedge vif.clk);
-      		$display("Transacciones pendientes en el mbx mntor_chkr = %g",mntor_chkr_mbx.num());
+      $display("[%g] el monitor esta enviado el dato al checker",$time);				
+      espera = 0;
+      @(posedge vif.clk);
+      $display("Transacciones pendientes en el mbx mntor_chkr = %g",mntor_chkr_mbx.num());
 
-      		while(espera < transaction.retardo)begin
-        		@(posedge vif.clk);
-          		espera = espera+1;
+      while(espera < transaction.retardo)begin
+        @(posedge vif.clk);
+            espera = espera+1;
 			end
 
-			foreach(vif.push[0][i]) begin
-  				fork
-  					forever @(posedge vif.clk) begin
-  			 			if (vif.push[0][i]) begin
-  			 				if (vif.D_push=={8{1'b1}}) begin
-  			 					transaction.tipo=broadcast;
-  			 				end else 
-  			 				begin
-  			 					transaction.tipo=trans;		
-  			 				end
-  			 				    D_in[i].push_back(vif.D_push[0][i]);
-  			 					$display("[%g] Operación completada",$time);
-  			 					transaction.tiempo=$time;
-  			 					transaction.dato=D_in[i].pop_front;
-  			 					mntor_chkr_mbx.put(transaction);
-  			 					transaction.print("Monitor: Transaccion enviada al checker");
+      if ([pckg_sz-1:pckg_sz-8]vif.D_push[0][0]==brodcst) begin
+        transaction.tipo=broadcast;
+        foreach(vif.push[0][i]) begin
+          if (vif.push[0][i]) begin
+              D_in[i].push_back(vif.D_push[0][i]);
+              transaction.dato=D_in[i].pop_front;
+          end
+        end
+        mntor_chkr_mbx.put(transaction);
+        $display("[%g] Operación completada",$time);
+        transaction.tiempo=$time;
+        transaction.print("Monitor: Transaccion enviada al checker");
+      end else
+      begin
+        foreach(vif.push[0][i]) begin
+          fork
+            forever @(posedge vif.clk) begin              
+              if (vif.reset) begin
+                transaction.tipo=reset; 
+              end else 
+              begin
+                if (vif.push[0][i]) begin
+                  transaction.tipo=trans; 
+                end
+              end 
+              D_in[i].push_back(vif.D_push[0][i]);
+              $display("[%g] Operación completada",$time);
+              transaction.tiempo=$time;
+              transaction.dato=D_in[i].pop_front;
+              mntor_chkr_mbx.put(transaction);
+              transaction.print("Monitor: Transaccion enviada al checker");
+            end
+          join_none
+        end
+      end
 
-  			 			end
-
-  			 		end
-  				join_none
-  			end
-  			
-
-			
 			@(posedge vif.clk);
 		end
 	endtask

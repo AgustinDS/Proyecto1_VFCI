@@ -34,32 +34,64 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 			chckr_mntr_mbx.get(from_mntr);
 			from_mntr.print("Checker: Transacción recibida desde el monitor.");
 			if(from_mntr.tipo == from_agnt.tipo) begin
-				case(trans_item.tipo)
+				case(from_mntr.tipo)
 					trans: begin
 						if(from_mntr.dato == from_agnt.dato) begin
 							$display("Checker: Transacción completada con éxito.");
-							//sb_item.dato_transmitido
-							//sb_item.Origen
-							//sb_item.Destino
-							//sb_item.tiempo_envio
-							//sb_item.tiempo_recibido
-							
 							// Enviar al scoreboard
+							sb_item.dato_transmitido=from_agnt.dato;
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.Origen=from_agnt.Origen;
+							sb_item.Destino=from_agnt.Destino;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=1;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_mntr.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
 							$display("Checker: [ERROR] Dato incorrecto recibido en el dispositivo.");
 							// Enviar al scoreboard
+							sb_item.dato_transmitido=from_agnt.dato;
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.Origen=from_agnt.Origen;
+							sb_item.Destino=from_agnt.Destino;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=0;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_agnt.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end
 					end
 				
 					reset: begin
-						if(from_mntr.dato == {16{1'b0}}) begin
+						if(from_mntr.dato == {pckg_sz{1'b0}}) begin
 							$display("Checker: Reset completado con éxito.");
 							// Enviar al scoreboard
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=1;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_agnt.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
 							$display("Checker: [ERROR] Reset no se realizó correctamente.");
 							// Enviar al scoreboard
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=0;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_agnt.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end
 					end
 					
@@ -67,10 +99,32 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 						if(from_mntr.dato == from_agnt.dato) begin
 							$display("Checker: Broadcast completado con éxito.");
 							// Enviar al scoreboard
+							sb_item.dato_transmitido=from_agnt.dato;
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.Origen=from_agnt.Origen;
+							sb_item.Destino=from_agnt.Destino;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=1;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_mntr.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
 							$display("Checker: [ERROR] Dato incorrecto recibido en el dispositivo.");
 							// Enviar al scoreboard
+							sb_item.dato_transmitido=from_agnt.dato;
+							sb_item.dato_recibido=from_mntr.dato;
+							sb_item.Origen=from_agnt.Origen;
+							sb_item.Destino=from_agnt.Destino;
+							sb_item.tiempo_envio=from_agnt.tiempo;
+							sb_item.tiempo_recibido=from_mntr.tiempo;
+							sb_item.completado=0;
+							sb_item.latencia_calc;
+							sb_item.tipo=from_agnt.tipo;
+							
+							chckr_sb_mbx.put(sb_item);
 						end
 					end
 				endcase
@@ -78,6 +132,15 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 			begin
 				$display("Checker: [ERROR] El tipo de transacción recibida del monitor no coincide con la del agente.");
 				// Enviar al scoreboard
+				sb_item.Origen=from_mntr.Origen;
+				sb_item.Destino=from_mntr.Destino;
+				sb_item.tiempo_envio=from_agnt.tiempo;
+				sb_item.tiempo_recibido=from_mntr.tiempo;
+				sb_item.completado=0;
+				sb_item.latencia_calc;
+				sb_item.tipo=from_agnt.tipo;
+							
+				chckr_sb_mbx.put(sb_item);
 			end
 		end
 	endtask

@@ -94,6 +94,19 @@ class agent #(parameter pckg_sz=32,parameter drvrs=4);
             agnt_chkr_mbx.put(transaccion);
             end
           end
+          dst_broadcast: begin
+            transaccion =new;
+            transaccion.tipo = broadcast;
+            transaccion.dato = dto_spec;
+            transaccion.retardo = ret_spec;
+            transaccion.Origen= or_spec;
+            transaccion.Destino= dst_spec;
+            transaccion.print("Agente: transacción creada");
+            transaction.tiempo = $time;
+            agnt_drv_mbx.put(transaccion);
+            agnt_chkr_mbx.put(transaccion);
+
+          end
         endcase
       end
     end

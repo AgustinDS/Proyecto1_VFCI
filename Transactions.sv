@@ -32,8 +32,8 @@
 // [Test:Generator]
 // llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias
 //
-// [Monitor:Scoreboard]
-// Dato/Origen/Destino/Tenvio/Trecibido/Completado/Reset/Latencia
+// [Checker:Scoreboard]
+// Dato/Origen/Destino/Tenvio/Trecibido/Completado/Tipo/Latencia
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ typedef enum {trans,broadcast,reset} tipo_acc;
 
 typedef enum {retardo_promedio,completo,porcentaje_fails,porcentaje_succ} solicitud_sb;
 
-typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias} instrucciones_agente;
+typedef enum {llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias,dst_broadcast} instrucciones_agente;
 
 
 /////////////////////////////////
@@ -62,6 +62,7 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
   	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0||Destino==broadcast;}
   	constraint org{dato[pckg_sz-9:pckg_sz-16]==Origen; Origen<=drvrs;}
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
+  	constraint brds{tipo==broadcast->dato[pckg_sz-1:pckg_sz-8]==broadcast);}
 
   function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10);
 		this.retardo=ret;
@@ -81,7 +82,7 @@ endclass
 
 
 //////////////////////////////////
-//Transacción Monitor:Scoreboard//
+//Transacción Checker:Scoreboard//
 //////////////////////////////////
 class trans_scoreboard #(parameter pckg_sz=32);
 	bit [pckg_sz-1:0] dato_transmitido;
@@ -90,8 +91,8 @@ class trans_scoreboard #(parameter pckg_sz=32);
 	int tiempo_envio;
 	int tiempo_recibido;
 	bit completado;
-	bit reset;
 	int latencia;
+	tipo_acc tipo;
 
 	function clean ();
 		this.dato_transmitido=0;
@@ -100,8 +101,8 @@ class trans_scoreboard #(parameter pckg_sz=32);
 		this.tiempo_envio=0;
 		this.tiempo_recibido=0;
 		this.completado=0;
-		this.reset=0;
 		this.latencia=0;
+		this.tipo=reset;
 	endfunction
 
 	task latencia_calc;
@@ -109,16 +110,16 @@ class trans_scoreboard #(parameter pckg_sz=32);
 	endtask
 
 	function print (string tag);
-    $display("[%g] %s dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
+    $display("[%g] %s ,Tipo=%s ,dato=0x%h,origen=0x%h,destino=0x%h,t_push=%g,t_pop=%g,cmplt=%g,rst=%g,ltncy=%g", 
              $time,
-             tag, 
+             tag,
+             this.tipo, 
              this.dato_transmitido,
              this.Origen,
              this.Destino, 
              this.tiempo_envio,
              this.tiempo_recibido,
              this.completado,
-             this.reset,
              this.latencia);
   endfunction
 

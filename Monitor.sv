@@ -15,7 +15,7 @@ class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10,par
   trans_bus_mbx mntor_chkr_mbx;
   int espera;
 
-    bit [pckg_sz-1:0] D_in [drvrs][$:Fif_Size]; //FIFOS emuladas 
+  bit [pckg_sz-1:0] D_in [drvrs][$:Fif_Size]; //FIFOS emuladas 
   
 
   task run();

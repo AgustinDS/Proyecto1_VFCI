@@ -65,7 +65,7 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
   	constraint brds{tipo==broadcast->Destino==broadcast;}
 
-  function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org);
+  	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org);
 		this.retardo=ret;
 		this.dato=dt;
 		this.tiempo=tmp;

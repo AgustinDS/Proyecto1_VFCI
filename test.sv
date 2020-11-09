@@ -21,34 +21,14 @@ class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10,para
   instrucciones_agente instr_agent;
   solicitud_sb instr_sb;
 
-  rand bit [7:0] drv;
-  rand int Fife;
   
-  constraint dispositivos {drv>0;drv<256;}
-  constraint Prof_fifos {Fife>0;Fife<500;}
-
   // Definición del ambiente de la prueba
-  ambiente #(.pckg_sz(pckg_sz),.drvrs(drv),.Fif_Size(Fife)) ambiente_inst;
+  ambiente #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) ambiente_inst;
   // Definición de la interface a la que se conectará el DUT
-  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drv)) _if;
+  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
 
   //definción de las condiciones iniciales del test
   function new;
-    
-    if (drvrs_al) begin
-      drv.randomize();
-    end else
-    begin
-      drv=drvrs;
-    end
-
-    if (fif_z) begin
-      Fife.randomize();
-    end else
-    begin 
-      Fife=Fif_Size;
-    end
-    
     // instaciación de los mailboxes
     test_sb_mbx  = new();
     test_agent_mbx = new();

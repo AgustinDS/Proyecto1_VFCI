@@ -12,7 +12,7 @@
 
 class ambiente #(parameter pckg_sz=32,parameter drvrs=4,parameter Fif_Size=10);
   // Declaración de los componentes del ambiente
-  monitor #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) driver_inst;
+  monitor #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) monitor_inst;
   driver #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) driver_inst;
   checker #(.pckg_sz(pckg_sz),.drvrs(drvrs)) checker_inst;
   score_board #(.pckg_sz(pckg_sz),.drvrs(drvrs)) scoreboard_inst;
@@ -22,8 +22,8 @@ class ambiente #(parameter pckg_sz=32,parameter drvrs=4,parameter Fif_Size=10);
   virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
 
   //declaración de los mailboxes
-  trans_fifo_mbx agnt_drv_mbx;           //mailbox del agente al driver
-  trans_fifo_mbx drv_chkr_mbx;           //mailbox del driver al checher
+  trans_bus_mbx agnt_drv_mbx;           //mailbox del agente al driver
+  trans_bus_mbx drv_chkr_mbx;           //mailbox del driver al checher
   trans_sb_mbx chkr_sb_mbx;              //mailbox del checker al scoreboard
   comando_test_sb_mbx test_sb_mbx;       //mailbox del test al scoreboard
   comando_test_agent_mbx test_agent_mbx; //mailbox del test al agente

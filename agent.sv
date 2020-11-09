@@ -20,11 +20,11 @@ class agent #(parameter pckg_sz=16,parameter drvrs=4);
   bit [7:0] or_spec;
   bit [7:0] dst_spec;
   
-  tipo_trans tpo_spec;
+  tipo_acc tpo_spec;
 
   bit [pckg_sz-1:0] dto_spec;
   instrucciones_agente instruccion;      // para guardar la última instruccion leída
-  trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)); transaccion;
+  trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaccion;
    
   function new;
     num_transacciones = 2;

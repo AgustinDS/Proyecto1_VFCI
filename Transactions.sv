@@ -60,7 +60,7 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
 
   	constraint const_retardo{retardo<=max_retardo; retardo>=0;}
   	constraint dest{dato[pckg_sz-1:pckg_sz-8]==Destino; Destino>=0;}
-  	constraint dist_Dest {Destino dist{broadcast:=20,[0:drvrs-1]:=65,[drvrs:100000]:=15}}
+  	constraint dist_Dest {Destino dist{broadcast:=20,[0:drvrs-1]:=65,[drvrs:100000]:=15};}
   	constraint org{Origen<drvrs;Origen>=0;}
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
   	constraint brds{tipo==broadcast->Destino==broadcast;}

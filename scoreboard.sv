@@ -15,8 +15,8 @@ class scoreBoard #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz =
   	trans_scoreboard #(.pckg_sz(pckg_sz)) from_chckr; // Objeto de transacción para enviar datos hacia el checker
   	trans_scoreboard #(.pckg_sz(pckg_sz)) from_agnt;  // Objeto de transacción para recibir datos del agente
   	
-  	trans_sb scoreboard[$]; // esta es la estructura dinámica que maneja el scoreboard  
-  	trans_sb completadas[$];
+  	trans_scoreboard scoreboard[$] = {}; // esta es la estructura dinámica que maneja el scoreboard  
+  	trans_scoreboard completadas[$] = {};
   	int ret_tot = 0;
   	int transacciones_falladas = 0;
   	int transacciones_completadas = 0;

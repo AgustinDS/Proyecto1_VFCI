@@ -14,12 +14,13 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10);
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx agnt_drv_mbx;
 	int espera;
-
+	
+  
   	bit [pckg_sz-1:0] D_out[drvrs][$:Fif_Size]; //FIFOS emuladas 
 	
 
 	task run();
-		$$display("[%g] El driver fue inicializado",$time);
+		$display("[%g] El driver fue inicializado",$time);
 
 		foreach(vif.pop[0][i]) begin
   			fork
@@ -62,7 +63,7 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10);
 					foreach (D_out[i]) begin	
                       	if (i!=transaction.Origen) begin
 							D_out[i].push_back(transaction.dato);
-							vif.D_pop=D_out[i][0];
+                          	vif.D_pop[0][i]=D_out[i][0];
 							vif.pndng[0][i]=1;
 						end 
 					end
@@ -71,7 +72,7 @@ class driver #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10);
 
 				trans:begin
                   	D_out[transaction.Origen].push_back(transaction.dato); //Agregamos el dato enviado en la fifo out del origen
-					vif.D_pop=D_out[transaction.Origen][0];
+                  	vif.D_pop[0][transaction.Origen]=D_out[transaction.Origen][0];
 					vif.pndng[0][transaction.Origen]=1;
 					transaction.tiempo = $time;
 	     			transaction.print("Driver: Transaccion ejecutada");

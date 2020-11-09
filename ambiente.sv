@@ -10,30 +10,30 @@
 //
 //
 
-class ambiente #(parameter pckg_sz=32,parameter drvrs=4,parameter Fif_Size=10);
+class ambiente #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10);
   // Declaración de los componentes del ambiente
   monitor #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) monitor_inst;
   driver #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) driver_inst;
-  checker #(.pckg_sz(pckg_sz),.drvrs(drvrs)) checker_inst;
+  checkr #(.pckg_sz(pckg_sz),.drvrs(drvrs)) checker_inst;
   scoreBoard #(.pckg_sz(pckg_sz),.drvrs(drvrs)) scoreboard_inst;
   agent #(.pckg_sz(pckg_sz),.drvrs(drvrs)) agent_inst;
   
   // Declaración de la interface que conecta el DUT 
-  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
+  virtual bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) inf;
 
   //declaración de los mailboxes
   trans_bus_mbx agnt_drv_mbx;           //mailbox del agente al driver
-  trans_bus_mbx drv_chkr_mbx;           //mailbox del driver al checher
+  //trans_bus_mbx drv_chkr_mbx;           //mailbox del driver al checher
   trans_sb_mbx chkr_sb_mbx;              //mailbox del checker al scoreboard
-  comando_test_sb_mbx test_sb_mbx;       //mailbox del test al scoreboard
+  //comando_test_sb_mbx test_sb_mbx;       //mailbox del test al scoreboard
   comando_test_agent_mbx test_agent_mbx; //mailbox del test al agente
 
   function new();
     // Instanciación de los mailboxes
-    drv_chkr_mbx   = new();
+    //drv_chkr_mbx   = new();
     agnt_drv_mbx   = new();
     chkr_sb_mbx    = new();
-    test_sb_mbx    = new();
+    //test_sb_mbx    = new();
     test_agent_mbx = new();
 
     // instanciación de los componentes del ambiente
@@ -42,13 +42,13 @@ class ambiente #(parameter pckg_sz=32,parameter drvrs=4,parameter Fif_Size=10);
     scoreboard_inst = new();
     agent_inst      = new();
     // conexion de las interfaces y mailboxes en el ambiente
-    driver_inst.vif             = _if;
-    driver_inst.drv_chkr_mbx    = drv_chkr_mbx;
+    driver_inst.vif             = inf;
+    //driver_inst.drv_chkr_mbx    = drv_chkr_mbx;
     driver_inst.agnt_drv_mbx    = agnt_drv_mbx;
-    checker_inst.drv_chkr_mbx   = drv_chkr_mbx;
-    checker_inst.chkr_sb_mbx    = chkr_sb_mbx;
-    scoreboard_inst.chkr_sb_mbx = chkr_sb_mbx;
-    scoreboard_inst.test_sb_mbx = test_sb_mbx;
+    //checker_inst.drv_chkr_mbx   = drv_chkr_mbx;
+    checker_inst.chckr_sb_mbx    = chkr_sb_mbx;
+    scoreboard_inst.sb_chckr_mbx = chkr_sb_mbx;
+    //scoreboard_inst.test_sb_mbx = test_sb_mbx;
     agent_inst.test_agent_mbx   = test_agent_mbx;
     agent_inst.agnt_drv_mbx = agnt_drv_mbx;
   endfunction

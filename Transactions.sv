@@ -49,7 +49,7 @@ typedef enum {sec_trans_aleatorias,trans_especifica,broadcast_esp,broadcast_al} 
 /////////////////////////////////
 //Driver/Monitor:Agente/Checker//
 /////////////////////////////////
-class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={8{1'b1}});
+class trans_bus #(parameter pckg_sz =16,parameter drvrs=4,parameter broadcast={8{1'b1}});
 	rand int retardo;
 	rand bit [pckg_sz-1:0] dato;
 	int tiempo;
@@ -65,7 +65,7 @@ class trans_bus #(parameter pckg_sz = 32,parameter drvrs=4,parameter broadcast={
   	constraint org_dest{Origen!=Destino;Origen>=0;Destino>=0;}
   	constraint brds{tipo==broadcast->Destino==broadcast;}
 
-  	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org);
+  	function new(int ret=0, bit [pckg_sz-1:0] dt=0,int tmp=0,tipo_acc tpo=trans, int retrdo_mx=10,bit [7:0] Org=0);
 		this.retardo=ret;
 		this.dato=dt;
 		this.tiempo=tmp;
@@ -159,4 +159,3 @@ interface bus_if #(parameter pckg_sz = 16, parameter drvrs = 4,parameter bits = 
   logic [pckg_sz-1:0] D_push[bits-1:0][drvrs-1:0];
 
 endinterface
- 

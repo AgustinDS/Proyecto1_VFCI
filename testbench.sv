@@ -7,21 +7,12 @@
 `include "scoreboard.sv"
 `include "agent.sv"
 `include "ambiente.sv"
+`include "test.sv"
 
 ///////////////////////////////////
 // Módulo para correr la prueba  //
 ///////////////////////////////////
 
-
-
-class rand_param
-	rand bit [7:0] drv;
-	rand int Fife;
-
-  	constraint dispositi	vos {drv>0;drv<256;}
-  	constraint Prof_fifos {Fife>0;Fife<500;}
-
-endclass    
 
 module testbench; 
   reg clk;
@@ -30,29 +21,29 @@ module testbench;
   parameter Fif_Size=10;
   parameter bit drvrs_al=0;
   parameter bit fif_z_al=0;
+  
+
 
   test #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) t0;
 
-  bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if(.clk(clk));
+  bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) inf(.clk(clk));
 
   always #5 clk = ~clk;
 ///DUT
 
   initial begin
-  	rand_param rand_params=new;
-  	rand_params.randomize();
-  	if (drvrs_al) begin
-  		defparam t0.drvrs=rand_params.drv;
-  		defparam t0.Fif_Size=rand_params.Fife;
-  	end
-  	if (fif_z_al) begin
-  		defparam _if.drvrs=rand_params.drv;
-  	end
+
+  	//if (drvrs_al) begin
+    	//drvrs=$urandom();
+  	//end
+  	//if (fif_z_al) begin
+     	//Fif_Size=$urandom();
+  	//end
 
     clk = 0;
     t0 = new();
-    t0._if = _if;
-    t0.ambiente_inst.driver_inst.vif = _if;
+    t0.inf = inf;
+    t0.ambiente_inst.driver_inst.vif =inf;
     fork
       t0.run();
     join_none

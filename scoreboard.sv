@@ -20,14 +20,16 @@ class scoreboard #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz =
   	int ret_tot = 0;
   	int transacciones_falladas = 0;
   	int transacciones_completadas = 0;
+  	string d_env, d_recib, origen, destino, t_envio, t_recib, lat, complt, linea_csv;
   	
   	task run;
   		$display("[%g] El scoreboard fue inicializado.", $time);
-  		$system();
+  		$system("echo 'Dato enviado, Dato recibdo, Terminal de procedencia, Terminal de destino, Tiempo de envío, Tiempo de recibido, Latencia, Completado, Tipo de transacción' > output.csv");
   		forever begin
   			sb_chckr_mbx.get(from_chckr);
   			from_chckr.print("[%g] Scoreboard: Guardando transacción recibida desde el checker.", $time);
   			scoreboard.push_back(from_chckr);
+  			newRowOut(from_chckr);
   			ret_tot = ret_tot + from_chckr.latencia;
   			if(from_chckr.completado == 1) begin
   				transacciones_completadas++;
@@ -39,16 +41,18 @@ class scoreboard #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz =
   		end
 	endtask
 	
-	function void append2outputTXT(const ref checker_item citem);
-        payload.hextoa(citem.fpayload);
-        receive_device.itoa(citem.receive_device);
-        send_device.itoa(citem.send_device);
-        treceive.itoa(citem.treceive);
-        tsend.itoa(citem.tsend);
-        receive_delay.itoa(citem.receive_delay);
-        ID.itoa(citem.ID);
-        outputTXT_line = {ID,comma,tsend,comma,send_device,comma,payload,comma,treceive,comma,receive_device,comma,receive_delay};
-        $system($sformatf("echo %0s >> output.txt",outputTXT_line));
-    endfunction
+	// Función para agregar una fila al archivo de salida .csv
+	function void newRowOut(const ref trans_scoreboard from_chckr);
+        	d_env.hextoa(from_chckr.dato_transmitido);
+        	d_recib.hextoa(from_chckr.dato_recibido);
+        	origen.hextoa(from_chckr.Origen);
+        	destino.hextoa(from_chckr.Destino);
+        	t_envio.itoa(from_chckr.tiempo_envio);
+        	t_recib.itoa(from_chckr.tiempo_recibido);
+        	lat.itoa(from_chckr.latencia);
+        	complt.hextoa(from_chckr.completado);
+        	linea_csv = {d_env,",",d_recib,",",origen,",",destino,",",t_envio,",",t_recib,",",lat,",",complt};
+        	$system($sformatf("echo %0s, %0s >> output.txt",linea_csv,from_chckr.tipo));
+    	endfunction
 	
 endclass

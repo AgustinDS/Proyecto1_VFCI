@@ -10,12 +10,12 @@
 //
 //
 
-class driver #(parameter pckg_sz=16,parameter drvrs=4);
+class driver #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10);
 	virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
 	trans_bus_mbx agnt_drv_mbx;
 	int espera;
 
-  	bit [pckg_sz-1:0] D_out[drvrs][$]; //FIFOS emuladas 
+  	bit [pckg_sz-1:0] D_out[drvrs][$:Fif_Size]; //FIFOS emuladas 
 	
 
 	task run();

@@ -10,9 +10,10 @@
 //
 //
 
-class ambiente #(parameter pckg_sz=32,parameter drvrs=4);
+class ambiente #(parameter pckg_sz=32,parameter drvrs=4,parameter Fif_Size=10);
   // Declaración de los componentes del ambiente
-  driver #(.pckg_sz(pckg_sz),.drvrs(drvrs)) driver_inst;
+  monitor #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) driver_inst;
+  driver #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) driver_inst;
   checker #(.pckg_sz(pckg_sz),.drvrs(drvrs)) checker_inst;
   score_board #(.pckg_sz(pckg_sz),.drvrs(drvrs)) scoreboard_inst;
   agent #(.pckg_sz(pckg_sz),.drvrs(drvrs)) agent_inst;

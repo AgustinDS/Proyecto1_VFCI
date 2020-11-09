@@ -10,7 +10,7 @@
 //
 //
 
-class test #(parameter pckg_sz=16, parameter drvrs =10); 
+class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10,parameter bit drvrs_al=0,parameter bit fif_z=0;); 
   
   comando_test_sb_mbx    test_sb_mbx;
   comando_test_agent_mbx test_agent_mbx;
@@ -20,11 +20,33 @@ class test #(parameter pckg_sz=16, parameter drvrs =10);
   solicitud_sb orden;
   instrucciones_agente instr_agent;
   solicitud_sb instr_sb;
-   
+
+  rand bit [7:0] drv;
+  rand int Fife;
+
+  constraint dispositivos {drv>0;drv<256}
+  constraint Prof_fifos {Fife>0;Fife<500}
+
+
+
+  if (drvrs_al) begin
+    DRVRS=drv.randomize();
+  end else
+  begin
+    DRVRS=drvrs;
+  end
+
+  if (fif_z) begin
+    FIF_Z=Fife.randomize();
+  end else
+  begin 
+    FIF_Z=Fif_Size;
+  end
+
  // Definición del ambiente de la prueba
-  ambiente #(.pckg_sz(pckg_sz),.drvrs(drvrs)) ambiente_inst;
+  ambiente #(.pckg_sz(pckg_sz),.drvrs(DRVRS),.Fif_Size(FIF_Z)) ambiente_inst;
  // Definición de la interface a la que se conectará el DUT
-  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
+  virtual fifo_if  #(.pckg_sz(pckg_sz),.drvrs(DRVRS)) _if;
 
   //definción de las condiciones iniciales del test
   function new; 

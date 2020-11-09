@@ -24,7 +24,7 @@ class agent #(parameter pckg_sz=16,parameter drvrs=4);
 
   bit [pckg_sz-1:0] dto_spec;
   instrucciones_agente instruccion;      // para guardar la última instruccion leída
-  trans_bus #(.pckg_sz(),.drvrs(drvrs)); transaccion;
+  trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)); transaccion;
    
   function new;
     num_transacciones = 2;
@@ -44,6 +44,7 @@ class agent #(parameter pckg_sz=16,parameter drvrs=4);
               transaccion =new;
               transaccion.max_retardo = max_retardo;
               transaccion.randomize();
+              std::randomize (transaccion.tipo) with {transaccion.tipo dist{trans:=60,broadcast:=30,reset:=10}; };
               transaccion.print("Agente: transacción creada");
               transaction.tiempo = $time;
               agnt_drv_mbx.put(transaccion);
@@ -77,6 +78,7 @@ class agent #(parameter pckg_sz=16,parameter drvrs=4);
           broadcast_al: begin
             transaccion =new;
             transaccion.randomize();
+            std::randomize (transaccion.tipo) with {transaccion.tipo dist{trans:=60,broadcast:=30,reset:=10}; };
             transaccion.tipo = broadcast;
             transaccion.print("Agente: transacción creada");
             transaction.tiempo = $time;

@@ -10,12 +10,12 @@
 //
 //
 
-class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter brodcst={8{1'b1}});
+class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10,parameter brodcst={8{1'b1}});
   virtual bus_if #(.pckg_sz(pckg_sz),.drvrs(drvrs)) vif;
   trans_bus_mbx mntor_chkr_mbx;
   int espera;
 
-    bit [pckg_sz-1:0] D_in [drvrs][$]; //FIFOS emuladas 
+    bit [pckg_sz-1:0] D_in [drvrs][$:Fif_Size]; //FIFOS emuladas 
   
 
   task run();

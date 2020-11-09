@@ -12,18 +12,43 @@ class scoreboard #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz =
 	trans_sb_mbx sb_chckr_mbx;	// Mailbox checker-scoreboard
   	trans_sb_mbx sb_agnt_mbx;	// Mailbox agente-sb
   	
-  	trans_scoreboard #(.drvrs(drvrs), .drvr_bit(drvr_bit), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_chckr; // Objeto de transacción para enviar datos hacia el checker
-  	trans_scoreboard #(.drvrs(drvrs), .drvr_bit(drvr_bit), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_agnt;  // Objeto de transacción para recibir datos del agente
+  	trans_scoreboard #(.pckg_sz(pckg_sz)) from_chckr; // Objeto de transacción para enviar datos hacia el checker
+  	trans_scoreboard #(.pckg_sz(pckg_sz)) from_agnt;  // Objeto de transacción para recibir datos del agente
+  	
+  	trans_sb scoreboard[$] = {}; // esta es la estructura dinámica que maneja el scoreboard  
+  	trans_sb completadas[$] = {};
+  	int ret_tot = 0;
+  	int transacciones_falladas = 0;
+  	int transacciones_completadas = 0;
   	
   	task run;
   		$display("[%g] El scoreboard fue inicializado.", $time);
+  		$system();
   		forever begin
-  	////////////// #5 REVISAR CUANTO HAY QUE ESPERAR ////////////////////////////////////////////////////////////////////
-  			if (sb_agnt_mbx.num > 0) begin
-  				sb_agnt_mbx.get(from_chckr);
-  				from_agnt.print("Scoreboard: Transacción recibida desde el monitor.");
-  				
-  			end	
+  			sb_chckr_mbx.get(from_chckr);
+  			from_chckr.print("[%g] Scoreboard: Guardando transacción recibida desde el checker.", $time);
+  			scoreboard.push_back(from_chckr);
+  			ret_tot = ret_tot + from_chckr.latencia;
+  			if(from_chckr.completado == 1) begin
+  				transacciones_completadas++;
+  				completadas.push_back(from_chckr);
+  			end
+  			else begin
+  				transsacciones_falladas++;
+  			end
   		end
-
+	endtask
+	
+	function void append2outputTXT(const ref checker_item citem);
+        payload.hextoa(citem.fpayload);
+        receive_device.itoa(citem.receive_device);
+        send_device.itoa(citem.send_device);
+        treceive.itoa(citem.treceive);
+        tsend.itoa(citem.tsend);
+        receive_delay.itoa(citem.receive_delay);
+        ID.itoa(citem.ID);
+        outputTXT_line = {ID,comma,tsend,comma,send_device,comma,payload,comma,treceive,comma,receive_device,comma,receive_delay};
+        $system($sformatf("echo %0s >> output.txt",outputTXT_line));
+    endfunction
+	
 endclass

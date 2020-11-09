@@ -8,20 +8,14 @@
 // Proposito General:
 // Checker del testbench del Bus Serial.
 
-class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32, parameter broadcast = {8{1'b1}});
+class checker #(parameter drvrs = 4, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
 	trans_sb_mbx chckr_sb_mbx;	// Mailbox checker-scoreboard
   	trans_bus chckr_mntr_mbx;	// Mailbox checker-monitor
   	trans_bus chckr_agnt_mbx;	// Mailbox para recibir las transacciones enviadas al driver, se debe conectar al mbx agente-driver
 
-  	trans_bus #(.drvrs(drvrs), .drvr_bit(drvr_bit), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_mntr; 		//Mensaje para comunicación con el monitor
-  	trans_bus #(.drvrs(drvrs), .drvr_bit(drvr_bit), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_agnt;
-  	trans_scoreboard #(.drvrs(drvrs), .drvr_bit(drvr_bit), .pckg_sz(pckg_sz), .broadcast(broadcast)) sb_item;	// Mensaje para comunicación con el scoreborard
-	
-	///////////////////////////////////////////// Ver esto /////////////////////////////////
-	function new();
-		//this.aux_item = {};
-		//this.cont_aux = 0;
-	endfunction
+  	trans_bus #(.drvrs(drvrs), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_mntr; 	//Mensaje para comunicación con el monitor
+  	trans_bus #(.drvrs(drvrs), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_agnt;	// Mensaje para recibir información del agente
+  	trans_scoreboard #(.pckg_sz(pckg_sz)) sb_item;					// Mensaje para comunicación con el scoreboard
 	
 	task run;
 		$display("[%g] El checker fue inicializado.", $time);
@@ -30,14 +24,14 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 			// sb_item = new();
 			sb_item.clean();
 			chckr_agnt_mbx.get(from_agnt);
-			from_agnt.print("Checker: Transacción recibida desde el agente.");
+			from_agnt.print("[%g] Checker: Transacción recibida desde el agente.", $time);
 			chckr_mntr_mbx.get(from_mntr);
-			from_mntr.print("Checker: Transacción recibida desde el monitor.");
+			from_mntr.print("[%g] Checker: Transacción recibida desde el monitor.", $time);
 			if(from_mntr.tipo == from_agnt.tipo) begin
 				case(from_mntr.tipo)
 					trans: begin
 						if(from_mntr.dato == from_agnt.dato) begin
-							$display("Checker: Transacción completada con éxito.");
+							$display("[%g] Checker: Transacción completada con éxito.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_transmitido=from_agnt.dato;
 							sb_item.dato_recibido=from_mntr.dato;
@@ -52,7 +46,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
-							$display("Checker: [ERROR] Dato incorrecto recibido en el dispositivo.");
+							$display("[%g] Checker: [ERROR] Dato incorrecto recibido en el dispositivo.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_transmitido=from_agnt.dato;
 							sb_item.dato_recibido=from_mntr.dato;
@@ -70,7 +64,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 				
 					reset: begin
 						if(from_mntr.dato == {pckg_sz{1'b0}}) begin
-							$display("Checker: Reset completado con éxito.");
+							$display("[%g] Checker: Reset completado con éxito.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_recibido=from_mntr.dato;
 							sb_item.tiempo_envio=from_agnt.tiempo;
@@ -82,7 +76,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
-							$display("Checker: [ERROR] Reset no se realizó correctamente.");
+							$display("[%g] Checker: [ERROR] Reset no se realizó correctamente.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_recibido=from_mntr.dato;
 							sb_item.tiempo_envio=from_agnt.tiempo;
@@ -97,7 +91,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 					
 					broadcast: begin
 						if(from_mntr.dato == from_agnt.dato) begin
-							$display("Checker: Broadcast completado con éxito.");
+							$display("[%g] Checker: Broadcast completado con éxito.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_transmitido=from_agnt.dato;
 							sb_item.dato_recibido=from_mntr.dato;
@@ -112,7 +106,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 							chckr_sb_mbx.put(sb_item);
 						end else
 						begin
-							$display("Checker: [ERROR] Dato incorrecto recibido en el dispositivo.");
+							$display("[%g] Checker: [ERROR] Dato incorrecto recibido en el dispositivo.", $time);
 							// Enviar al scoreboard
 							sb_item.dato_transmitido=from_agnt.dato;
 							sb_item.dato_recibido=from_mntr.dato;
@@ -130,7 +124,7 @@ class checker #(parameter drvrs = 4,parameter drvr_bit=2, parameter pckg_sz = 32
 				endcase
 			end else
 			begin
-				$display("Checker: [ERROR] El tipo de transacción recibida del monitor no coincide con la del agente.");
+				$display("[%g] Checker: [ERROR] El tipo de transacción recibida del monitor no coincide con la del agente.", $time);
 				// Enviar al scoreboard
 				sb_item.Origen=from_mntr.Origen;
 				sb_item.Destino=from_mntr.Destino;

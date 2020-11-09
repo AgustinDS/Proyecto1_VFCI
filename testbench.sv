@@ -28,7 +28,6 @@ module testbench;
   parameter pckg_sz=16;
   parameter drvrs=4;
   parameter Fif_Size=10;
-  parameter Fif_Size=10;
   parameter bit drvrs_al=0;
   parameter bit fif_z_al=0;
 
@@ -49,6 +48,7 @@ module testbench;
   	if (fif_z_al) begin
   		defparam _if.drvrs=rand_params.drv;
   	end
+
     clk = 0;
     t0 = new();
     t0._if = _if;

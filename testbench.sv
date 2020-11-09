@@ -18,7 +18,7 @@ class rand_param
 	rand bit [7:0] drv;
 	rand int Fife;
 
-  	constraint dispositivos {drv>0;drv<256;}
+  	constraint dispositi	vos {drv>0;drv<256;}
   	constraint Prof_fifos {Fife>0;Fife<500;}
 
 endclass    

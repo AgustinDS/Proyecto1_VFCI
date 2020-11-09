@@ -11,9 +11,9 @@
 //llenado_aleatorio,trans_aleatoria,trans_especifica,sec_trans_aleatorias
 
 class agent #(parameter pckg_sz=16,parameter drvrs=4);
-  trans_bus_mbx agnt_drv_mbx=new;           // Mailbox del agente al driver
-  trans_bus_mbx agnt_chkr_mbx=new;
-  comando_test_agent_mbx test_agent_mbx=new; // Mailbox del test al agente
+  trans_bus_mbx agnt_drv_mbx;           // Mailbox del agente al driver
+  trans_bus_mbx agnt_chkr_mbx;
+  comando_test_agent_mbx test_agent_mbx; // Mailbox del test al agente
   int num_transacciones;                 // Número de transacciones para las funciones del agente
   int max_retardo; 
   int ret_spec;

@@ -24,7 +24,7 @@ class monitor #(parameter pckg_sz=16,parameter drvrs=4,parameter Fif_Size=10,par
 
     @(posedge vif.clk);
       forever begin
-      trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction;
+        trans_bus #(.pckg_sz(pckg_sz),.drvrs(drvrs)) transaction=new;
             
 
       $display("[%g] el monitor esta enviado el dato al checker",$time);        

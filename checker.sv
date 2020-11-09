@@ -9,9 +9,9 @@
 // Checker del testbench del Bus Serial.
 
 class checkr #(parameter drvrs = 4, parameter pckg_sz = 16, parameter broadcast = {8{1'b1}});
-	trans_sb_mbx chckr_sb_mbx=new;	// Mailbox checker-scoreboard
-  	trans_bus_mbx chckr_mntr_mbx=new;	// Mailbox checker-monitor
-  	trans_bus_mbx chckr_agnt_mbx=new;	// Mailbox para recibir las transacciones enviadas al driver, se debe conectar al mbx agente-driver
+	trans_sb_mbx  chckr_sb_mbx;	// Mailbox checker-scoreboard
+  	trans_bus_mbx chckr_mntr_mbx;	// Mailbox checker-monitor
+  	trans_bus_mbx chckr_agnt_mbx;	// Mailbox para recibir las transacciones enviadas al driver, se debe conectar al mbx agente-driver
 
   	trans_bus #(.drvrs(drvrs), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_mntr; 	//Mensaje para comunicación con el monitor
   	trans_bus #(.drvrs(drvrs), .pckg_sz(pckg_sz), .broadcast(broadcast)) from_agnt;	// Mensaje para recibir información del agente
@@ -20,8 +20,8 @@ class checkr #(parameter drvrs = 4, parameter pckg_sz = 16, parameter broadcast 
 	task run;
 		$display("[%g] El checker fue inicializado.", $time);
 		sb_item = new();
-      	from_agnt =new();
-      	from_mntr =new();
+      	//from_agnt =new();
+      	//from_mntr =new();
 		forever begin
 			sb_item = new();
 			sb_item.clean();

@@ -25,7 +25,7 @@ class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10);
   // Definición del ambiente de la prueba
   ambiente #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) ambiente_inst;
   // Definición de la interface a la que se conectará el DUT
-  virtual bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) inf;
+  virtual bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if;
 
   //definción de las condiciones iniciales del test
   function new;
@@ -34,7 +34,7 @@ class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10);
     test_agent_mbx = new();
     // Definición y conexión del dirver
     ambiente_inst = new();
-    ambiente_inst.inf = inf;    
+    ambiente_inst._if = _if;    
     //ambiente_inst.test_sb_mbx = test_sb_mbx;
     //ambiente_inst.scoreboard_inst.test_sb_mbx = test_sb_mbx;
     ambiente_inst.test_agent_mbx = test_agent_mbx;

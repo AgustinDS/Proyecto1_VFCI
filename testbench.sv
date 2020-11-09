@@ -11,43 +11,44 @@
 ///////////////////////////////////
 // Módulo para correr la prueba  //
 ///////////////////////////////////
-    
+
+
+
+class rand_param
+	rand bit [7:0] drv;
+	rand int Fife;
+
+  	constraint dispositivos {drv>0;drv<256;}
+  	constraint Prof_fifos {Fife>0;Fife<500;}
+
+endclass    
+
 module testbench; 
   reg clk;
   parameter pckg_sz=16;
+  parameter drvrs=4;
+  parameter Fif_Size=10;
+  parameter Fif_Size=10;
+  parameter bit drvrs_al=0;
+  parameter bit fif_z_al=0;
 
-  rand bit [7:0] drv;
-  rand int Fife;
+  test #(.pckg_sz(pckg_sz),.drvrs(drvrs),.Fif_Size(Fif_Size)) t0;
 
-  constraint dispositivos {drv>0;drv<256;}
-  constraint Prof_fifos {Fife>0;Fife<500;}
+  bus_if  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) _if(.clk(clk));
 
-  test #(.pckg_sz(pckg_sz),.drvrs(drv),.Fif_Size(Fife)) t0;
-
-  bus_if  #(.pckg_sz(pckg_sz),.drvrs(drv)) _if;
   always #5 clk = ~clk;
 ///DUT
 
   initial begin
-    
+  	rand_param rand_params=new;
+  	rand_params.randomize();
   	if (drvrs_al) begin
-      drv.randomize();
-    end else
-    begin
-      drv=drvrs;
-    end
-
-    if (fif_z) begin
-      Fife.randomize();
-    end else
-    begin 
-      Fife=Fif_Size;
-    end
-    
-    defparam t0.drvrs=drv;
-    defparam t0.Fif_Size=Fife;
-    defparam _if.drvrs=drv;
-
+  		defparam t0.drvrs=rand_params.drv;
+  		defparam t0.Fif_Size=rand_params.Fife;
+  	end
+  	if (fif_z_al) begin
+  		defparam _if.drvrs=rand_params.drv;
+  	end
     clk = 0;
     t0 = new();
     t0._if = _if;

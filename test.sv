@@ -10,7 +10,7 @@
 //
 //
 
-class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10,parameter bit drvrs_al=0,parameter bit fif_z=0); 
+class test #(parameter pckg_sz=16, parameter drvrs =4,parameter Fif_Size=10); 
   
   comando_test_sb_mbx    test_sb_mbx;
   comando_test_agent_mbx test_agent_mbx;
